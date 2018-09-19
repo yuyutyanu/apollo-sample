@@ -1,17 +1,63 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div>
+      {{ hello }}
+      <div>
+       <input type="text" v-model="message">
+       {{ ping }}
+      </div>
+      <div>
+        <input type="text" v-model="label">
+        <button @click="addTag">addTag!!!</button>
+        add tag :{{ tag }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import gql from 'graphql-tag'
 
 export default {
   name: 'app',
-  components: {
-    HelloWorld
+  apollo:{
+    hello:gql`{ hello }`,
+    ping:{
+      query: gql`query pingMessage($message:String){
+          ping(message:$message)
+        }`,
+      variables(){
+        return {message: this.message}
+      }
+    },
+  },
+  data(){
+    return {
+      hello: '',
+      ping:'',
+      message:'',
+      tag:'',
+      label:''
+    }
+  },
+  methods:{
+    addTag(){
+      this.$apollo.mutate({
+        mutation: gql`mutation($label:String!){
+          addTag(label:$label){
+            id
+            label
+          }
+        }`,
+        variables:{
+          label:this.label
+        }
+      }).then(data =>{
+        this.tag = data
+      }).catch(err => {
+        console.log(err)
+      })
+    }
   }
 }
 </script>
