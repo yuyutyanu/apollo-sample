@@ -15,6 +15,10 @@ const typeDefs = gql`
   type Mutation{
     addTag(label: String!):Tag
   }
+  
+  type Subscription{
+    tagAdded(label: String!):Tag
+  }
 `;
 
 
@@ -39,6 +43,11 @@ const resolvers = {
   Mutation:{
     addTag:(root, {label}, context) => {
       return addTag(label)
+    }
+  },
+  Subscription:{
+    tagAdded:{
+
     }
   }
 };

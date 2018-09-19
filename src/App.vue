@@ -30,6 +30,24 @@ export default {
         return {message: this.message}
       }
     },
+    tags:{
+      subscribeToMore:{
+        document: gql`subscription tagAddedSubscription($label: String){
+          tagAdded(label:$label){
+            id
+            label
+          }
+        }`,
+        variables(){
+          return {
+            label: this.label
+          }
+        },
+        updateQuery(previousResult, { subscriptionData }){
+          console.log(previousResult, subscriptionData)
+        }
+      }
+    }
   },
   data(){
     return {
