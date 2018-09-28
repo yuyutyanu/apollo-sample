@@ -15,8 +15,13 @@
     "apollo-link-ws": "^1.0.9",
     "apollo-server": "^2.1.0",
     "apollo-utilities": "^1.0.21",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
     "graphql": "^14.0.2",
+    "graphql-server-express": "^1.4.0",
     "graphql-tag": "^2.9.2",
+    "subscriptions-transport-ws": "^0.9.15",
     "vue": "^2.5.17",
     "vue-apollo": "^3.0.0-beta.25"
   },

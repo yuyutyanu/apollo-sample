@@ -13,17 +13,17 @@ Vue.config.productionTip = false
 
 const httpLink = new HttpLink({
   // You should use an absolute URL here
-  uri: 'http://localhost:4000',
+  uri: 'http://localhost:3020/graphql',
 })
-
 
 // Create the subscription websocket link
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:4000',
+  uri: 'ws://localhost:3020/subscriptions',
   options: {
     reconnect: true,
   },
 })
+
 
 const link = split(
   // split based on operation type

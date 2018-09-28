@@ -1,60 +1,47 @@
-const { ApolloServer, gql } = require('apollo-server');
-const faker = require('faker')
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { createServer } = require('http');
+const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
 
-const typeDefs = gql`
-  type Tag{
-    id: Int
-    label: String
-  }
+// Subs
+const { execute, subscribe } = require('graphql')
+const { SubscriptionServer } = require('subscriptions-transport-ws');
 
-  type Query {
-    hello: String
-    ping(message: String):String
-  }
-  
-  type Mutation{
-    addTag(label: String!):Tag
-  }
-  
-  type Subscription{
-    tagAdded(label: String!):Tag
-  }
-`;
+const schema = require('./schema');
 
+const PORT = 3020;
+const SUBSCRIPTIONS_PATH = '/subscriptions';
 
-let tags = []
-let id = 0
+var app = express();
 
-function addTag(label){
-  const tag = {id:id++ , label: label}
-  tags.push(tag)
-  return tag
-}
+app.use(cors());
 
-for(let i = 0; i < 42 ; i++){
-  addTag(faker.word)
-}
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-const resolvers = {
-  Query: {
-    ping:(root, {message}, context) => `ping message is :${message}`,
-    hello: () => 'hello world'
-  },
-  Mutation:{
-    addTag:(root, {label}, context) => {
-      return addTag(label)
-    }
-  },
-  Subscription:{
-    tagAdded:{
+app.use('/graphql', graphqlExpress({ schema }));
 
-    }
-  }
-};
+app.use('/graphiql', graphiqlExpress({
+  endpointURL: '/graphql',
+}));
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = createServer(app)
 
-
-server.listen().then(({ url }) => {
-  console.log(`Server ready at ${url}`);
+server.listen(PORT, () => {
+  console.log(`API Server is now running on http://localhost:${PORT}/graphql`)
+  console.log(`API Subscriptions server is now running on ws://localhost:${PORT}${SUBSCRIPTIONS_PATH}`)
 });
+
+// Subs
+SubscriptionServer.create(
+  {
+    schema,
+    execute,
+    subscribe,
+  },
+  {
+    server,
+    path: SUBSCRIPTIONS_PATH,
+  }
+);
